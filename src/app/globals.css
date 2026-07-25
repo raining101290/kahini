@@ -1,26 +1,151 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+  Poster wall after dark — single fixed dark theme, no light/dark toggle.
+  Every color below traces back to one of the 7 tokens named in the
+  direction. Do not add hues outside this set.
+*/
+@theme {
+  /* Registered as a real breakpoint (not an ad-hoc min-[1440px]: arbitrary
+     variant) so Tailwind emits it in correctly sorted order relative to
+     lg/xl/2xl — an arbitrary variant here would land in the wrong cascade
+     position and lose to lg: at the same viewport width. A purely numeric
+     name (e.g. --breakpoint-1440) isn't recognized as a variant at all, so
+     this needs a letter-led name. */
+  --breakpoint-wide: 1440px;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --radius: 0.625rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Palette */
+  --color-ink: #0a0710;
+  --color-surface: #150d1e;
+  --color-plum: #2e1338;
+  --color-alta: #d62828;
+  --color-marigold: #f0a202;
+  --color-ivory: #f4ede2;
+  --color-muted: #9a8fa6;
+
+  /* Semantic aliases — every value below is a var() reference to the
+     7 tokens above, never a new literal color. */
+  --color-background: var(--color-ink);
+  --color-foreground: var(--color-ivory);
+  --color-primary: var(--color-alta);
+  --color-primary-foreground: var(--color-ivory);
+  --color-secondary: var(--color-plum);
+  --color-secondary-foreground: var(--color-ivory);
+  --color-muted-foreground: var(--color-muted);
+  --color-accent: var(--color-marigold);
+  --color-accent-foreground: var(--color-ink);
+  --color-destructive: var(--color-alta);
+  --color-border: var(--color-plum);
+  --color-input: var(--color-plum);
+  --color-ring: var(--color-marigold);
+
+  /* Fonts */
+  --font-display: var(--font-anek-bangla), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* Type scale — display (Anek Bangla, condensed + heavy) through body
+     (Inter Tight). Explicit line-height, tracking, and weight per step. */
+  --text-display-xl: 3.25rem;
+  --text-display-xl--line-height: 1.05;
+  --text-display-xl--letter-spacing: -0.02em;
+  --text-display-xl--font-weight: 800;
+
+  --text-display-lg: 2.5rem;
+  --text-display-lg--line-height: 1.08;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-lg--font-weight: 800;
+
+  --text-display-md: 2rem;
+  --text-display-md--line-height: 1.15;
+  --text-display-md--letter-spacing: -0.02em;
+  --text-display-md--font-weight: 700;
+
+  --text-display-sm: 1.5rem;
+  --text-display-sm--line-height: 1.2;
+  --text-display-sm--letter-spacing: -0.02em;
+  --text-display-sm--font-weight: 700;
+
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.6;
+  --text-body-lg--letter-spacing: 0em;
+  --text-body-lg--font-weight: 400;
+
+  --text-body-md: 1rem;
+  --text-body-md--line-height: 1.6;
+  --text-body-md--letter-spacing: 0em;
+  --text-body-md--font-weight: 400;
+
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.5;
+  --text-body-sm--letter-spacing: 0em;
+  --text-body-sm--font-weight: 400;
+
+  /* Marquee — pure CSS transform loop, no JS per-frame work. */
+  --animate-marquee: marquee 30s linear infinite;
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+
+  /* Root loading state — underline scales in and out under the wordmark. */
+  --animate-underline-pulse: underline-pulse 1.6s ease-in-out infinite;
+
+  @keyframes underline-pulse {
+    0%,
+    100% {
+      transform: scaleX(0);
+    }
+    50% {
+      transform: scaleX(1);
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground/90;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-display {
+    @apply font-display;
+    font-stretch: 85%;
+  }
+
+  ::selection {
+    background: var(--color-alta);
+    color: var(--color-ivory);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: -1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
 }
