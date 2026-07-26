@@ -1,5 +1,5 @@
 export const hero = {
-  eyebrow: "BANGLADESH'S FIRST MICRO DRAMA OTT PLATFORM",
+  eyebrow: "A micro drama streaming platform.",
   headline: "One-minute story.",
   cta: "Stream Now",
   secondaryCta: "Partner with us",
@@ -8,15 +8,17 @@ export const hero = {
 
 export type Stat = {
   readonly value: number;
-  readonly prefix?: string;
+  readonly prefix: string;
   readonly suffix: string;
+  readonly label: string;
+  readonly icon: "duration" | "unlock" | "subscribe" | "reach";
 };
 
 export const stats = [
-  { value: 2, prefix: "1–", suffix: " min episodes" },
-  { value: 10, prefix: "৳", suffix: " per series" },
-  { value: 50, prefix: "৳", suffix: " /month" },
-  { value: 300, prefix: "", suffix: "M Bangla speakers" },
+  { value: 2, prefix: "1–", suffix: "", label: "min episodes", icon: "duration" },
+  { value: 10, prefix: "৳", suffix: "", label: "per series", icon: "unlock" },
+  { value: 50, prefix: "৳", suffix: "", label: "per month", icon: "subscribe" },
+  { value: 300, prefix: "", suffix: "M", label: "Bangla speakers", icon: "reach" },
 ] as const satisfies readonly Stat[];
 
 export type WhatWeDoItem = {

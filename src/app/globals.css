@@ -25,7 +25,9 @@
   --color-ink: #0a0710;
   --color-surface: #150d1e;
   --color-plum: #2e1338;
-  --color-alta: #d62828;
+  /* Darkened from the original #d62828 so ivory text set on this
+     background (buttons, active filter pills) clears 4.5:1 AA contrast. */
+  --color-alta: #c32424;
   --color-marigold: #f0a202;
   --color-ivory: #f4ede2;
   --color-muted: #9a8fa6;
@@ -41,7 +43,10 @@
   --color-muted-foreground: var(--color-muted);
   --color-accent: var(--color-marigold);
   --color-accent-foreground: var(--color-ink);
-  --color-destructive: var(--color-alta);
+  /* A lighter tint of alta, not the raw token — alta itself is too dark to
+     read as text on ink/surface (3.99:1, fails AA); this is the same hue
+     lightened until it clears 4.5:1 as foreground text. */
+  --color-destructive: #dd4f4f;
   --color-border: var(--color-plum);
   --color-input: var(--color-plum);
   --color-ring: var(--color-marigold);

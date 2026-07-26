@@ -13,11 +13,11 @@ export function Hero() {
     >
       <div className="flex min-h-0 flex-1 flex-col justify-[safe_center] gap-6 px-6 pt-24 pb-8 lg:basis-[45%] lg:px-16 lg:pt-28 lg:pb-16">
         <div className="relative flex items-center">
-          <span
+          {/* <span
             aria-hidden
             className="bg-marigold absolute top-1/2 right-full h-px w-screen -translate-y-1/2"
-          />
-          <span className="font-mono text-marigold text-body-sm tracking-[0.15em] uppercase">
+          /> */}
+          <span className="font-sans text-marigold text-body-sm tracking-[0.15em]">
             {hero.eyebrow}
           </span>
         </div>

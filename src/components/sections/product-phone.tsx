@@ -10,6 +10,7 @@ export function ProductPhone() {
   const phoneRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
   const [videoFailed, setVideoFailed] = useState(false);
+  const [isNearViewport, setIsNearViewport] = useState(false);
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
@@ -36,7 +37,29 @@ export function ProductPhone() {
     return () => ctx.revert();
   }, [reducedMotion]);
 
-  const showStaticPoster = reducedMotion || videoFailed;
+  // Product is well below the fold — the video (several MB) has no reason
+  // to load on initial page load. Only mount the <video> element (and let
+  // its request start) once the phone is actually about to scroll into
+  // view, instead of eagerly autoplaying-and-fetching it from mount.
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (reducedMotion || !wrapper) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsNearViewport(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(wrapper);
+
+    return () => observer.disconnect();
+  }, [reducedMotion]);
+
+  const showStaticPoster = reducedMotion || videoFailed || !isNearViewport;
 
   return (
     <div
@@ -64,6 +87,7 @@ export function ProductPhone() {
               muted
               loop
               playsInline
+              preload="none"
               poster="/video/feed-poster.jpg"
               className="h-full w-full object-cover"
               onError={() => {

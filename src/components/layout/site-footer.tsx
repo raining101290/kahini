@@ -78,7 +78,7 @@ export function SiteFooter() {
             {site.brand}
           </span>
           <p className="text-body-sm text-muted">{site.tagline}</p>
-          <p className="font-display text-body-sm text-muted">
+          <p lang="bn" className="font-display text-body-sm text-muted">
             {site.taglineBn}
           </p>
         </div>

@@ -10,7 +10,12 @@ import { Button } from "@/components/ui/button";
 import { careers } from "@/content/careers";
 
 export const metadata: Metadata = {
-  title: "Careers — Kahini",
+  title: "Careers",
+  description:
+    "Open roles at Kahini Studios Ltd — Bangladesh's first micro-drama OTT platform.",
+  alternates: {
+    canonical: "/careers",
+  },
 };
 
 const focusRing =
@@ -20,7 +25,7 @@ export default function CareersPage() {
   return (
     <main className="bg-ink px-6 py-32 lg:px-16">
       <div className="mx-auto max-w-3xl">
-        <p className="font-mono text-marigold text-body-sm tracking-[0.15em] uppercase">
+        <p className="font-sans text-marigold text-body-sm tracking-[0.15em] uppercase">
           Careers
         </p>
         <h1 className="text-display-lg text-ivory mt-3">
@@ -38,16 +43,16 @@ export default function CareersPage() {
           .
         </p>
 
-        <Accordion type="single" collapsible className="mt-14">
+        <h2 className="text-display-md text-ivory mt-14">Open roles</h2>
+
+        <Accordion type="single" collapsible className="mt-6">
           {careers.map((role) => (
             <AccordionItem
               key={role.slug}
               value={role.slug}
               className="border-plum"
             >
-              <AccordionTrigger
-                className={`text-display-sm text-ivory hover:no-underline ${focusRing}`}
-              >
+              <AccordionTrigger className="text-display-sm text-ivory hover:no-underline">
                 <span className="flex flex-col gap-1">
                   <span>{role.title}</span>
                   <span className="font-mono text-body-sm text-muted font-normal">

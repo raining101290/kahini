@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Anek_Bangla, Geist_Mono, Inter_Tight } from "next/font/google";
-import { siteMetadata } from "@/content/site";
+import { contact, site, siteMetadata, siteUrl } from "@/content/site";
 import { LenisProvider } from "@/lib/lenis-provider";
 import { SiteNav } from "@/components/layout/site-nav";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -30,8 +30,51 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: siteMetadata.title,
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: siteMetadata.title,
+    template: `%s — ${site.brand}`,
+  },
   description: siteMetadata.description,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: siteMetadata.title,
+    description: siteMetadata.description,
+    url: siteUrl,
+    siteName: site.brand,
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteMetadata.title,
+    description: siteMetadata.description,
+  },
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: site.legal,
+  alternateName: site.brand,
+  url: siteUrl,
+  logo: `${siteUrl}/kahini-logo-white.png`,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: contact.address,
+    addressCountry: "BD",
+  },
+  email: contact.email,
+  telephone: contact.phone,
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: site.brand,
+  url: siteUrl,
 };
 
 export default function RootLayout({
@@ -45,6 +88,15 @@ export default function RootLayout({
       className={`${anekBangla.variable} ${interTight.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="bg-ink flex min-h-full flex-col">
+        <script
+          type="application/ld+json"
+          // Static, app-owned data only (no user input) — safe to inline.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
         <LenisProvider>
           <SiteNav />
           {children}

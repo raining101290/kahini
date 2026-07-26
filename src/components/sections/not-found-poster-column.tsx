@@ -49,9 +49,11 @@ export function NotFoundPosterColumn() {
           >
             <Image
               src={item.poster}
-              alt=""
+              alt={item.title}
               width={200}
               height={356}
+              sizes="(max-width: 640px) 160px, 192px"
+              priority={i < 2}
               className="h-full w-full object-cover"
             />
           </div>

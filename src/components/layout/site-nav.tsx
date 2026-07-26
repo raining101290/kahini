@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { motion } from "motion/react";
+import type { ScrollTrigger as ScrollTriggerInstance } from "gsap/ScrollTrigger";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,10 +17,21 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { nav, site } from "@/content/site";
-import { ScrollTrigger } from "@/lib/gsap";
 import { useLenis } from "@/lib/lenis-provider";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "@/lib/utils";
+
+// GSAP + ScrollTrigger and the motion-driven underline are only ever
+// exercised on the homepage (the only route where nav items match a real
+// section) — statically importing them here would pull both libraries into
+// every route's bundle via the root layout. Loaded on demand instead, so
+// non-home routes (privacy-policy, terms, careers, 404) skip the cost
+// entirely.
+const NavUnderline = dynamic(
+  () =>
+    import("@/components/layout/nav-underline").then((mod) => mod.NavUnderline),
+  { ssr: false }
+);
 
 const focusRing =
   "outline-none focus-visible:ring-2 focus-visible:ring-marigold focus-visible:ring-offset-2 focus-visible:ring-offset-ink rounded-sm";
@@ -39,6 +51,14 @@ export function SiteNav() {
   // that doesn't exist on the current page.
   const resolveHref = (hash: string) =>
     pathname === "/" ? hash : `/${hash}`;
+
+  // On the homepage these links are same-page anchors — no navigation, no
+  // route data to fetch — so Next's automatic prefetch just wastes bytes
+  // and CPU (observed firing several background RSC fetches ~7s into a
+  // throttled load, right as the page would otherwise reach idle). Only
+  // worth prefetching from a different route, where the link is a real
+  // navigation back to "/".
+  const shouldPrefetch = pathname !== "/";
 
   // Background transition fires at 80px of scroll, regardless of whether
   // Lenis is driving the scroll or the browser is (reduced motion).
@@ -72,32 +92,43 @@ export function SiteNav() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setActiveHref(null);
 
-    // Triggers must be created after the browser has finished laying out
-    // the full page, not synchronously during this effect — at that exact
-    // instant the rest of the homepage hasn't been reflowed yet (only Hero
-    // has real height), so "top center"/"bottom center" resolve against a
-    // collapsed layout and get stuck there: unlike other ScrollTriggers on
-    // this page, these never recover on a later ScrollTrigger.refresh().
-    // One rAF is enough to land after that reflow.
-    let triggers: ReturnType<typeof ScrollTrigger.create>[] = [];
-    const raf = requestAnimationFrame(() => {
-      triggers = nav
-        .map((item) => {
-          const target = document.querySelector(item.href);
-          if (!target) return null;
-          return ScrollTrigger.create({
-            trigger: target,
-            start: "top center",
-            end: "bottom center",
-            onToggle: (self) => {
-              if (self.isActive) setActiveHref(item.href);
-            },
-          });
-        })
-        .filter((trigger) => trigger !== null);
+    // Nav items only match real sections on the homepage — nothing to
+    // track (and no reason to load GSAP/ScrollTrigger) elsewhere.
+    if (pathname !== "/") return;
+
+    let triggers: ScrollTriggerInstance[] = [];
+    let raf = 0;
+    let cancelled = false;
+
+    import("@/lib/gsap").then(({ ScrollTrigger }) => {
+      if (cancelled) return;
+      // Triggers must be created after the browser has finished laying out
+      // the full page, not synchronously here — at that exact instant the
+      // rest of the homepage hasn't been reflowed yet (only Hero has real
+      // height), so "top center"/"bottom center" resolve against a
+      // collapsed layout and get stuck there: unlike other ScrollTriggers
+      // on this page, these never recover on a later ScrollTrigger.refresh().
+      // One rAF is enough to land after that reflow.
+      raf = requestAnimationFrame(() => {
+        triggers = nav
+          .map((item) => {
+            const target = document.querySelector(item.href);
+            if (!target) return null;
+            return ScrollTrigger.create({
+              trigger: target,
+              start: "top center",
+              end: "bottom center",
+              onToggle: (self) => {
+                if (self.isActive) setActiveHref(item.href);
+              },
+            });
+          })
+          .filter((trigger) => trigger !== null);
+      });
     });
 
     return () => {
+      cancelled = true;
       cancelAnimationFrame(raf);
       triggers.forEach((trigger) => trigger.kill());
     };
@@ -113,12 +144,16 @@ export function SiteNav() {
       )}
     >
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link href={resolveHref("#home")} className={cn("shrink-0", focusRing)}>
+        <Link
+          href={resolveHref("#home")}
+          prefetch={shouldPrefetch}
+          className={cn("shrink-0", focusRing)}
+        >
           <Image
             src="/kahini-logo-white.png"
             alt={site.brand}
             width={260}
-            height={120}
+            height={120} 
             priority
             className="h-8 w-auto"
           />
@@ -129,6 +164,7 @@ export function SiteNav() {
             <Link
               key={item.href}
               href={resolveHref(item.href)}
+              prefetch={shouldPrefetch}
               className={cn(
                 "text-body-sm text-ivory/90 hover:text-ivory relative py-1",
                 focusRing
@@ -139,11 +175,7 @@ export function SiteNav() {
                 (reducedMotion ? (
                   <span className="bg-marigold absolute inset-x-0 -bottom-1 h-0.5" />
                 ) : (
-                  <motion.span
-                    layoutId="nav-underline"
-                    className="bg-marigold absolute inset-x-0 -bottom-1 h-0.5"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
+                  <NavUnderline />
                 ))}
             </Link>
           ))}
@@ -174,6 +206,7 @@ export function SiteNav() {
                 <SheetClose key={item.href} asChild>
                   <Link
                     href={resolveHref(item.href)}
+                    prefetch={shouldPrefetch}
                     className={cn(
                       "font-display text-display-sm text-ivory animate-in fade-in slide-in-from-right-4 fill-mode-both",
                       focusRing

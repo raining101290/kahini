@@ -7,7 +7,7 @@ const PALETTE = [
   { name: "ink", hex: "#0A0710", swatch: "bg-ink", note: "page base" },
   { name: "surface", hex: "#150D1E", swatch: "bg-surface", note: "cards, raised panels" },
   { name: "plum", hex: "#2E1338", swatch: "bg-plum", note: "section bands, dividers" },
-  { name: "alta", hex: "#D62828", swatch: "bg-alta", note: "primary CTAs, active states" },
+  { name: "alta", hex: "#C32424", swatch: "bg-alta", note: "primary CTAs, active states" },
   { name: "marigold", hex: "#F0A202", swatch: "bg-marigold", note: "eyebrows, focus, hover glow" },
   { name: "ivory", hex: "#F4EDE2", swatch: "bg-ivory", note: "primary text" },
   { name: "muted", hex: "#9A8FA6", swatch: "bg-muted", note: "secondary text" },

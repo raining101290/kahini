@@ -1,13 +1,22 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { NotFoundPosterColumn } from "@/components/sections/not-found-poster-column";
+
+export const metadata: Metadata = {
+  title: "Page Not Found",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function NotFound() {
   return (
     <main className="bg-ink flex min-h-screen items-center overflow-hidden px-6 py-32 lg:px-16">
       <div className="mx-auto flex w-full max-w-6xl items-center gap-16">
         <div className="flex flex-1 flex-col gap-6">
-          <p className="font-mono text-marigold text-body-sm tracking-[0.15em] uppercase">
+          <p className="font-sans text-marigold text-body-sm tracking-[0.15em] uppercase">
             404
           </p>
           <h1 className="text-display-lg text-ivory max-w-lg">

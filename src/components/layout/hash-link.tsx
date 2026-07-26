@@ -14,6 +14,9 @@ type HashLinkProps = Omit<ComponentProps<typeof Link>, "href"> & {
 // trying to scroll to an anchor that doesn't exist on the current page.
 export function HashLink({ href, ...props }: HashLinkProps) {
   const pathname = usePathname();
-  const resolved = pathname === "/" ? href : `/${href}`;
-  return <Link href={resolved} {...props} />;
+  const isHomepage = pathname === "/";
+  const resolved = isHomepage ? href : `/${href}`;
+  // Same-page anchors on the homepage need no prefetch — there's no route
+  // to fetch. Only a real cross-route link back to "/" benefits from it.
+  return <Link href={resolved} prefetch={!isHomepage} {...props} />;
 }

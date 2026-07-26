@@ -11,7 +11,7 @@ export function LegalLayout({ doc }: { doc: LegalDocument }) {
           aria-label="Sections"
           className="flex flex-col gap-4 lg:sticky lg:top-28 lg:self-start"
         >
-          <p className="font-mono text-marigold text-body-sm tracking-[0.15em] uppercase">
+          <p className="font-sans text-marigold text-body-sm tracking-[0.15em] uppercase">
             On this page
           </p>
           <ul className="flex flex-col gap-3">

@@ -66,6 +66,7 @@ function PosterCard({ item, onOpen }: PosterCardProps) {
           <div className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-3 p-3 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
             <p className="text-ivory text-body-sm font-bold">{item.title}</p>
             <p
+              lang="bn"
               className="font-display text-ivory/70 text-body-sm"
               style={{ fontStretch: "85%" }}
             >
@@ -105,7 +106,7 @@ export function OurContent() {
   return (
     <section id="content" className="bg-ink px-6 py-24 lg:px-16">
       <div className="mx-auto max-w-7xl">
-        <p className="font-mono text-marigold text-body-sm tracking-[0.15em] uppercase">
+        <p className="font-sans text-marigold text-body-sm tracking-[0.15em] uppercase">
           Our Content
         </p>
         <h2 className="text-display-lg text-ivory mt-3 max-w-2xl">
@@ -187,6 +188,7 @@ export function OurContent() {
                       {selected.title}
                     </DialogTitle>
                     <p
+                      lang="bn"
                       className="font-display text-ivory/70 text-body-lg -mt-2"
                       style={{ fontStretch: "85%" }}
                     >

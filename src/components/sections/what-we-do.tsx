@@ -37,7 +37,7 @@ export function WhatWeDo() {
   return (
     <section id="what-we-do" className="bg-ink px-6 py-24 lg:px-16">
       <div className="mx-auto max-w-6xl">
-        <p className="font-mono text-marigold text-body-sm tracking-[0.15em] uppercase">
+        <p className="font-sans text-marigold text-body-sm tracking-[0.15em] uppercase">
           What We Do
         </p>
         <h2 className="text-display-lg text-ivory mt-3 max-w-2xl">

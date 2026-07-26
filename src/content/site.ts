@@ -1,3 +1,9 @@
+// Marketing site's own public URL — not the streaming app (kahinireels.com).
+// Set NEXT_PUBLIC_SITE_URL to the real production domain before launch; this
+// fallback is a placeholder used only when that env var is unset.
+export const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://kahini.com";
+
 export const site = {
   brand: "Kahini",
   legal: "Kahini Studios Ltd",
