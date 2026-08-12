@@ -1,16 +1,24 @@
 export type Genre =
+  | "Drama"
   | "Romance"
   | "Thriller"
-  | "Family Drama"
-  | "Revenge"
-  | "Campus"
-  | "Supernatural";
+  | "Action"
+  | "Crime"
+  | "Comedy"
+  | "Family"
+  | "Emotional"
+  | "Talk Show"
+  | "Documentary"
+  | "Podcast"
+  | "Youth";
 
 export type Series = {
   readonly slug: string;
   readonly title: string;
   readonly titleBn: string;
-  readonly genre: Genre;
+  // A series can now carry more than one genre tag (e.g. "Drama, Romance"),
+  // so this is a list rather than a single value.
+  readonly genre: readonly Genre[];
   readonly episodes: number;
   readonly synopsis: string;
   readonly poster: string;
@@ -18,123 +26,153 @@ export type Series = {
 
 export const series = [
   {
-    slug: "monsoon-vows",
-    title: "Monsoon Vows",
-    titleBn: "বর্ষার প্রতিশ্রুতি",
-    genre: "Romance",
-    episodes: 12,
+    slug: "ayesha-aditto",
+    title: "Ayesha Aditto",
+    titleBn: "আয়েশা আদিত্য",
+    genre: ["Drama", "Romance"],
+    episodes: 1,
     synopsis:
-      "A wedding photographer and a runaway bride keep meeting at the wrong weddings — until one turns out to be her own.",
+      "The story follows the emotional journey of Ayesha and Aditto as they navigate love, complex relationships, and the struggles of life together.",
     poster: "/posters/poster-1.jpg",
   },
   {
-    slug: "second-chance-tea-stall",
-    title: "Second Chance Tea Stall",
-    titleBn: "দ্বিতীয় সুযোগের চা স্টল",
-    genre: "Romance",
-    episodes: 10,
+    slug: "chupi-chupi",
+    title: "Chupi Chupi",
+    titleBn: "চুপি চুপি",
+    genre: ["Drama", "Romance"],
+    episodes: 1,
     synopsis:
-      "She inherits her ex's family tea stall. He shows up every morning at 7, pretending it's for the tea.",
+      "A story revolving around a complex love triangle, secrets, and subtle romantic emotions among three individuals.",
     poster: "/posters/poster-2.jpg",
   },
   {
-    slug: "the-last-rickshaw",
-    title: "The Last Rickshaw",
-    titleBn: "শেষ রিকশা",
-    genre: "Thriller",
-    episodes: 14,
+    slug: "co-sarangkot",
+    title: "C/O Sarangkot",
+    titleBn: "কেয়ার অফ সারাংকোট",
+    genre: ["Drama", "Romance"],
+    episodes: 1,
     synopsis:
-      "A rickshaw puller picks up the same passenger every night at midnight — and every night, a different person goes missing.",
+      "Set against scenic landscapes, the story revolves around unexpected encounters, emotional bonds, and a journey of love.",
     poster: "/posters/poster-3.jpg",
   },
   {
-    slug: "blackout-in-old-dhaka",
-    title: "Blackout in Old Dhaka",
-    titleBn: "পুরান ঢাকায় ব্ল্যাকআউট",
-    genre: "Thriller",
-    episodes: 16,
+    slug: "dhoasha",
+    title: "Dhoasha",
+    titleBn: "ধোঁয়াশা",
+    genre: ["Action", "Crime", "Thriller"],
+    episodes: 1,
     synopsis:
-      "The power cuts out on the same street every night at 9pm — right before someone in the building dies.",
+      "A suspenseful tale filled with danger and secrets, as two individuals find themselves caught in a web of mystery and survival.",
     poster: "/posters/poster-4.jpg",
   },
   {
-    slug: "the-inheritance-house",
-    title: "The Inheritance House",
-    titleBn: "উত্তরাধিকারের বাড়ি",
-    genre: "Family Drama",
-    episodes: 9,
+    slug: "fagun-evabeo-ase",
+    title: "Fagun Evabeo Ase",
+    titleBn: "ফাল্গুন এভাবেও আসে",
+    genre: ["Romance", "Comedy", "Drama"],
+    episodes: 1,
     synopsis:
-      "Three siblings return to their childhood home to sell it, and find their late father left them a condition none of them expected.",
+      "A heartwarming tale of youth, friendship, and unexpected romance arriving like the vibrant colors of spring.",
     poster: "/posters/poster-5.jpg",
   },
   {
-    slug: "eldest-daughter",
-    title: "Eldest Daughter",
-    titleBn: "বড় মেয়ে",
-    genre: "Family Drama",
-    episodes: 11,
+    slug: "jabon-manei-bangla-cinema",
+    title: "Jabon Manei Bangla Cinema",
+    titleBn: "জীবন মানেই বাংলা সিনেমা",
+    genre: ["Comedy", "Drama", "Family"],
+    episodes: 1,
     synopsis:
-      "She raised her siblings after her mother left. Now her mother is back, and wants to be a parent again.",
+      "A dramatic and humorous reflection on daily struggles, family dynamics, and emotional twists, showing how real life often mirrors the drama of Bengali cinema.",
     poster: "/posters/poster-6.jpg",
   },
   {
-    slug: "office-408",
-    title: "Office 408",
-    titleBn: "অফিস ৪০৮",
-    genre: "Revenge",
-    episodes: 18,
+    slug: "keno-ei-shongota",
+    title: "Keno Ei Shongota",
+    titleBn: "কেন এই সংগোপতা",
+    genre: ["Drama", "Family", "Emotional"],
+    episodes: 1,
     synopsis:
-      "Fired and blacklisted by a rival firm, she comes back under a new name — in the corner office two floors above theirs.",
+      "A deeply moving tale exploring intricate family ties, emotional distance, and unspoken bonds across different generations.",
     poster: "/posters/poster-7.jpg",
   },
   {
-    slug: "burn-the-contract",
-    title: "Burn the Contract",
-    titleBn: "চুক্তি পোড়াও",
-    genre: "Revenge",
+    slug: "legend-and-legacy",
+    title: "Legend & Legacy",
+    titleBn: "লেজেন্ড অ্যান্ড লেগ্যাসি",
+    genre: ["Talk Show", "Documentary"],
     episodes: 13,
     synopsis:
-      "A business deal cost him his father's company. Ten years later, he's the one holding the contract that can end theirs.",
+      "Hosted by Rumana Malik Munmun, this talk show celebrates iconic Bangladeshi personalities and legends as they share their extraordinary life journeys, experiences, and cultural legacies.",
     poster: "/posters/poster-8.jpg",
   },
   {
-    slug: "notebook-of-secrets",
-    title: "Notebook of Secrets",
-    titleBn: "গোপন নোটবুক",
-    genre: "Campus",
-    episodes: 10,
+    slug: "monty-bubly",
+    title: "Monty Bubly",
+    titleBn: "মন্টি বাবলি",
+    genre: ["Comedy", "Romance", "Drama"],
+    episodes: 1,
     synopsis:
-      "A found notebook full of anonymous confessions turns a quiet campus upside down, one page at a time.",
+      "A lighthearted romantic comedy depicting the humorous dynamics, money troubles, and quirky relationship between Monty and Bubly.",
     poster: "/posters/poster-9.jpg",
   },
   {
-    slug: "hostel-403",
-    title: "Hostel 403",
-    titleBn: "হোস্টেল ৪০৩",
-    genre: "Campus",
-    episodes: 12,
+    slug: "plan-b",
+    title: "Plan B",
+    titleBn: "প্ল্যান বি",
+    genre: ["Comedy", "Drama", "Youth"],
+    episodes: 1,
     synopsis:
-      "Four roommates, one hostel room, and a pact to fix each other's love lives before final exams.",
+      "A fun-filled youth drama about a group of close friends who pull together an unexpected alternate strategy when their primary plans fall apart.",
     poster: "/posters/poster-10.jpg",
   },
   {
-    slug: "the-ferry-that-returns",
-    title: "The Ferry That Returns",
-    titleBn: "ফিরে আসা খেয়া",
-    genre: "Supernatural",
-    episodes: 8,
+    slug: "she",
+    title: "She: Real Talk, Real Change",
+    titleBn: "শী: রিয়েল টক, রিয়েল চেঞ্জ",
+    genre: ["Talk Show", "Podcast"],
+    episodes: 10,
     synopsis:
-      "Every full moon, a ferry crosses the river with the same passengers it lost twenty years ago.",
+      "An engaging podcast-style talk show highlighting candid conversations about women's empowerment, personal journeys, and real-life experiences.",
     poster: "/posters/poster-11.jpg",
   },
   {
-    slug: "the-grandmothers-lamp",
-    title: "The Grandmother's Lamp",
-    titleBn: "ঠাকুরমার প্রদীপ",
-    genre: "Supernatural",
-    episodes: 15,
+    slug: "she-season-02",
+    title: "She Season 02: Real Talk, Real Change",
+    titleBn: "শী সিজন ০২: রিয়েল টক, রিয়েল চেঞ্জ",
+    genre: ["Talk Show", "Podcast"],
+    episodes: 12,
     synopsis:
-      "An old oil lamp passed down through the family shows the next person to hold it one memory that isn't their own.",
+      "Hosted by Sarah Alam, the second season of 'She' brings inspiring conversations with notable guests like Toma Mirza, Jessia Islam, and Ritu Porna Chakma, focusing on women's empowerment, unique choices, and driving real change.",
     poster: "/posters/poster-12.jpg",
+  },
+  {
+    slug: "sondhi",
+    title: "Sondhi",
+    titleBn: "সন্ধি",
+    genre: ["Drama", "Romance"],
+    episodes: 1,
+    synopsis:
+      "A touching romantic story exploring love, understanding, and emotional reconciliation between two individuals starring Safa Kabir and Khairul Basar.",
+    poster: "/posters/poster-13.jpg",
+  },
+  {
+    slug: "shuvo-kaje-deri-korte-nei",
+    title: "Shuvo Kaje Deri Korte Nei",
+    titleBn: "শুভ কাজে দেরি করতে নেই",
+    genre: ["Comedy", "Romance", "Drama"],
+    episodes: 1,
+    synopsis:
+      "A lighthearted romantic drama surrounding marriage complications, humorous misunderstandings, and the rush to complete good deeds without delay.",
+    poster: "/posters/poster-14.jpg",
+  },
+  {
+    slug: "tobuo-eshechilo-prem",
+    title: "Tobuo Eshechilo Prem",
+    titleBn: "তবুও এসেছিল প্রেম",
+    genre: ["Drama", "Romance"],
+    episodes: 1,
+    synopsis:
+      "A heartfelt romantic drama about two people who unexpectedly find love amidst life's challenges, distance, and emotional hurdles.",
+    poster: "/posters/poster-15.jpg",
   },
 ] as const satisfies readonly Series[];

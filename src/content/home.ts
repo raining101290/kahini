@@ -11,14 +11,47 @@ export type Stat = {
   readonly prefix: string;
   readonly suffix: string;
   readonly label: string;
-  readonly icon: "duration" | "unlock" | "subscribe" | "reach";
+  readonly description: string;
+  readonly icon: "projects" | "followers" | "views" | "partnerships";
 };
 
 export const stats = [
-  { value: 2, prefix: "1–", suffix: "", label: "min episodes", icon: "duration" },
-  { value: 10, prefix: "৳", suffix: "", label: "per series", icon: "unlock" },
-  { value: 50, prefix: "৳", suffix: "", label: "per month", icon: "subscribe" },
-  { value: 300, prefix: "", suffix: "M", label: "Bangla speakers", icon: "reach" },
+  {
+    value: 50,
+    prefix: "",
+    suffix: "+",
+    label: "Projects Delivered",
+    description:
+      "Delivered 50+ content and production projects across brands and platforms—each crafted with a clear narrative and strategic intent.",
+    icon: "projects",
+  },
+  {
+    value: 600,
+    prefix: "",
+    suffix: "K",
+    label: "Followers Across Social Platforms",
+    description:
+      "Built and engaged a combined audience of 600K+ across platforms through consistent, story-driven content.",
+    icon: "followers",
+  },
+  {
+    value: 50,
+    prefix: "",
+    suffix: "+",
+    label: "Million Views",
+    description:
+      "Generated over 50 million views by creating content that blends storytelling with measurable audience impact.",
+    icon: "views",
+  },
+  {
+    value: 50,
+    prefix: "",
+    suffix: "+",
+    label: "Brand Partnerships",
+    description:
+      "Partnered with 50+ brands to translate marketing objectives into compelling, audience-first content.",
+    icon: "partnerships",
+  },
 ] as const satisfies readonly Stat[];
 
 export type WhatWeDoItem = {
@@ -70,6 +103,11 @@ export const pillars = [
   },
 ] as const satisfies readonly Pillar[];
 
+export const product = {
+  eyebrow: "Product",
+  heading: "One app. Every story.",
+} as const;
+
 export type ProductFeature = {
   readonly icon: "swipe" | "unlock" | "subscribe";
   readonly label: string;
@@ -95,12 +133,19 @@ export const payment = {
   ],
 } satisfies { label: string; methods: readonly PaymentMethod[] };
 
+export const pricing = {
+  eyebrow: "Pricing",
+  heading: "Pay for what you watch.",
+} as const;
+
 export type PricingPlan = {
   readonly name: string;
   readonly price: string;
   readonly period?: string;
   readonly description: string;
+  readonly features: readonly string[];
   readonly cta: string;
+  readonly icon: "ticket" | "crown";
   readonly emphasis?: boolean;
 };
 
@@ -110,7 +155,13 @@ export const pricingPlans = [
     price: "৳10",
     period: "",
     description: "Unlock one full series, keep it forever, no subscription.",
+    features: [
+      "One full series, unlocked",
+      "Yours to watch forever",
+      "Pay with bKash, Nagad, or Rocket",
+    ],
     cta: "Unlock Now",
+    icon: "ticket",
     emphasis: false,
   },
   {
@@ -118,7 +169,13 @@ export const pricingPlans = [
     price: "৳50",
     period: "/month",
     description: "Everything, always.",
+    features: [
+      "Every series, unlocked",
+      "New drops included as they release",
+      "Cancel anytime",
+    ],
     cta: "Subscribe Now",
+    icon: "crown",
     emphasis: true,
   },
 ] as const satisfies readonly PricingPlan[];
@@ -159,14 +216,14 @@ export type BrandLogo = {
 };
 
 export const brandLogos = [
-  { name: "Brand One", logo: "/brands/brand-1.png" },
-  { name: "Brand Two", logo: "/brands/brand-2.png" },
-  { name: "Brand Three", logo: "/brands/brand-3.png" },
-  { name: "Brand Four", logo: "/brands/brand-4.png" },
-  { name: "Brand Five", logo: "/brands/brand-5.png" },
-  { name: "Brand Six", logo: "/brands/brand-6.png" },
-  { name: "Brand Seven", logo: "/brands/brand-7.png" },
-  { name: "Brand Eight", logo: "/brands/brand-8.png" },
-  { name: "Brand Nine", logo: "/brands/brand-9.png" },
-  { name: "Brand Ten", logo: "/brands/brand-10.png" },
+  { name: "Hamdard", logo: "/brands/brand-1.png" },
+  { name: "British Council", logo: "/brands/brand-2.png" },
+  { name: "Dabur", logo: "/brands/brand-3.png" },
+  { name: "Haier", logo: "/brands/brand-4.png" },
+  { name: "Sunquick", logo: "/brands/brand-5.png" },
+  { name: "1Screen", logo: "/brands/brand-6.png" },
+  { name: "Rise", logo: "/brands/brand-7.png" },
+  { name: "Ispahani", logo: "/brands/brand-8.png" },
+  { name: "Samsung", logo: "/brands/brand-9.png" },
+  { name: "Yellow", logo: "/brands/brand-10.png" },
 ] as const satisfies readonly BrandLogo[];

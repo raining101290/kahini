@@ -8,7 +8,7 @@ export function HeroHeadline() {
       <SplitHeadline
         as="h1"
         stagger={0.06}
-        className="font-display text-ivory text-4xl font-extrabold"
+        className="font-display text-ivory text-[clamp(2.75rem,6vw,6rem)] leading-[1.05] font-extrabold"
       >
         {hero.headline}
       </SplitHeadline>
@@ -18,7 +18,7 @@ export function HeroHeadline() {
           a ~1.9s render delay. */}
       <p
         lang="bn"
-        className="font-display text-ivory/60 text-[clamp(2rem,3.5vw,3.5rem)] font-extrabold"
+        className="font-display text-ivory/60 text-[clamp(2rem,3.5vw,3.5rem)] leading-[1.15] font-extrabold"
         style={{ fontStretch: "85%" }}
       >
         {site.taglineBn}

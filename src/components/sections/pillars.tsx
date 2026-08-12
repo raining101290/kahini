@@ -1,15 +1,33 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { Reveal } from "@/components/motion/Reveal";
 import { pillars } from "@/content/home";
+
+// One backdrop photo per pillar, reused from the existing poster catalog
+// rather than new stock photography. Chosen specifically for ones that
+// survive heavy blur/grayscale as texture — no screens, no legible faces,
+// already dark/moody in tone — since several other posters in this set
+// (a laptop screen, a movie-theater audience, a close-up portrait) read as
+// an obviously "wrong" recognizable shape once visible enough to notice.
+const BACKDROP_POSTERS = [
+  "/posters/poster-10.jpg",
+  "/posters/poster-4.jpg",
+  "/posters/poster-8.jpg",
+  "/posters/poster-3.jpg",
+];
+
+const BACKDROP_ACTIVE_OPACITY = 0.6;
 
 export function Pillars() {
   const pinRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const railRef = useRef<HTMLDivElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
+  const backdropRefs = useRef<Array<HTMLImageElement | null>>([]);
   const copyRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   useEffect(() => {
@@ -17,7 +35,8 @@ export function Pillars() {
     const track = trackRef.current;
     const rail = railRef.current;
     const bg = bgRef.current;
-    if (!pin || !track || !rail || !bg) return;
+    const glow = glowRef.current;
+    if (!pin || !track || !rail || !bg || !glow) return;
 
     const rootStyle = getComputedStyle(document.documentElement);
     const ink = rootStyle.getPropertyValue("--color-ink").trim();
@@ -33,6 +52,19 @@ export function Pillars() {
         const segments = panelCount - 1;
 
         gsap.set(bg, { backgroundColor: bgColors[0] });
+        // Baseline centering (xPercent/yPercent) plus the drift's start
+        // position, all composed into one GSAP-managed transform — a
+        // Tailwind translate class here would fight the tween below for
+        // control of the same `transform` property.
+        gsap.set(glow, {
+          xPercent: -50,
+          yPercent: -50,
+          x: "-20vw",
+          y: "-8vh",
+        });
+        backdropRefs.current.forEach((el, i) => {
+          if (el) gsap.set(el, { opacity: i === 0 ? BACKDROP_ACTIVE_OPACITY : 0 });
+        });
         copyRefs.current.forEach((el, i) => {
           if (el && i > 0) gsap.set(el, { opacity: 0, y: 24 });
         });
@@ -56,6 +88,10 @@ export function Pillars() {
 
         tl.to(track, { x: `-${segments * 100}vw`, duration: segments }, 0);
         tl.fromTo(rail, { scaleX: 0 }, { scaleX: 1, duration: segments }, 0);
+        // Drifting spotlight — sweeps diagonally across the pinned viewport
+        // in sync with the panel scroll, giving the background some
+        // atmosphere instead of a flat color swap.
+        tl.to(glow, { x: "20vw", y: "8vh", duration: segments }, 0);
 
         pillars.forEach((_, i) => {
           const copyEl = copyRefs.current[i];
@@ -82,6 +118,19 @@ export function Pillars() {
         // rather than straddling the arrival point.
         for (let i = 1; i < panelCount; i++) {
           tl.to(bg, { backgroundColor: bgColors[i], duration: 0.4 }, i - 0.4);
+
+          const prevBackdrop = backdropRefs.current[i - 1];
+          const nextBackdrop = backdropRefs.current[i];
+          if (prevBackdrop) {
+            tl.to(prevBackdrop, { opacity: 0, duration: 0.4 }, i - 0.4);
+          }
+          if (nextBackdrop) {
+            tl.to(
+              nextBackdrop,
+              { opacity: BACKDROP_ACTIVE_OPACITY, duration: 0.4 },
+              i - 0.4
+            );
+          }
         }
 
         document.fonts.ready.then(() => {
@@ -105,7 +154,29 @@ export function Pillars() {
         ref={pinRef}
         className="relative hidden h-screen overflow-hidden lg:motion-safe:block"
       >
-        <div ref={bgRef} className="absolute inset-0" />
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          {BACKDROP_POSTERS.map((src, i) => (
+            <Image
+              key={src}
+              ref={(el) => {
+                backdropRefs.current[i] = el;
+              }}
+              src={src}
+              alt=""
+              fill
+              sizes="100vw"
+              quality={65}
+              priority={i === 0}
+              className="scale-110 object-cover object-center opacity-0 blur-md grayscale brightness-125 contrast-110"
+            />
+          ))}
+        </div>
+        <div ref={bgRef} className="absolute inset-0 opacity-50" />
+        <div
+          ref={glowRef}
+          aria-hidden
+          className="bg-marigold/25 pointer-events-none absolute top-1/2 left-1/2 size-144 rounded-full blur-[120px]"
+        />
         <div
           ref={trackRef}
           className="relative flex h-full will-change-transform"

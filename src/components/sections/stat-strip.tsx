@@ -1,13 +1,13 @@
-import { Clock, Unlock, Repeat, Globe2 } from "lucide-react";
+import { Clapperboard, Users, Eye, Handshake } from "lucide-react";
 import { Reveal } from "@/components/motion/Reveal";
 import { CountUp } from "@/components/motion/CountUp";
 import { stats } from "@/content/home";
 
 const ICONS = {
-  duration: Clock,
-  unlock: Unlock,
-  subscribe: Repeat,
-  reach: Globe2,
+  projects: Clapperboard,
+  followers: Users,
+  views: Eye,
+  partnerships: Handshake,
 } as const;
 
 export function StatStrip() {
@@ -29,13 +29,13 @@ export function StatStrip() {
         className="bg-marigold/10 pointer-events-none absolute top-1/2 left-1/2 h-72 w-xl -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl"
       />
 
-      <div className="relative mx-auto grid max-w-6xl grid-cols-2 gap-4 px-6 sm:grid-cols-4 sm:gap-5 lg:px-16">
+      <div className="relative mx-auto grid max-w-6xl grid-cols-1 gap-4 px-6 sm:grid-cols-2 sm:gap-5 lg:px-16">
         {stats.map((stat, i) => {
           const Icon = ICONS[stat.icon];
           return (
             <Reveal key={stat.label} delay={i * 0.08} className="h-full">
-              <div className="group border-ivory/10 bg-ink/25 hover:border-marigold/40 hover:bg-ink/35 flex h-full flex-col gap-5 rounded-2xl border p-5 backdrop-blur-sm transition-colors duration-300 sm:gap-6 sm:p-6">
-                <span className="border-plum bg-surface/80 group-hover:border-marigold/50 flex size-10 items-center justify-center rounded-full border transition-colors duration-300">
+              <div className="group border-ivory/10 bg-ink/25 hover:border-marigold/40 hover:bg-ink/35 flex h-full flex-col gap-4 rounded-2xl border p-6 backdrop-blur-sm transition-colors duration-300 sm:p-8">
+                <span className="border-plum bg-surface/80 group-hover:border-marigold/50 flex size-11 shrink-0 items-center justify-center rounded-full border transition-colors duration-300">
                   <Icon className="text-marigold size-5" />
                 </span>
                 <div className="flex flex-col gap-1">
@@ -43,10 +43,13 @@ export function StatStrip() {
                     value={stat.value}
                     prefix={stat.prefix}
                     suffix={stat.suffix}
-                    className="font-display text-display-sm sm:text-display-md text-ivory tabular-nums"
+                    className="font-display text-display-md sm:text-display-lg text-ivory tabular-nums"
                   />
-                  <span className="text-muted text-body-sm">{stat.label}</span>
+                  <span className="text-ivory text-body-md font-medium">
+                    {stat.label}
+                  </span>
                 </div>
+                <p className="text-muted text-body-sm">{stat.description}</p>
               </div>
             </Reveal>
           );

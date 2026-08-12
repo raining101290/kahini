@@ -7,9 +7,13 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { series, type Series } from "@/content/series";
 import { cn } from "@/lib/utils";
 
-const COLUMN_1 = series.slice(0, 4);
-const COLUMN_2 = series.slice(4, 8);
-const COLUMN_3 = series.slice(8, 12);
+// Split evenly across 3 columns regardless of how many series exist, rather
+// than a fixed slice(0,4)/(4,8)/(8,12) — with a hardcoded split, any series
+// added past the 12th silently never appears in this desktop layout.
+const COLUMN_SIZE = Math.ceil(series.length / 3);
+const COLUMN_1 = series.slice(0, COLUMN_SIZE);
+const COLUMN_2 = series.slice(COLUMN_SIZE, COLUMN_SIZE * 2);
+const COLUMN_3 = series.slice(COLUMN_SIZE * 2, COLUMN_SIZE * 3);
 // Only each column's top card sits above the fold before any drift/scroll —
 // not the whole column — so only these three need eager loading.
 const topSlugs: (string | undefined)[] = [
@@ -158,9 +162,15 @@ export function PosterWall() {
     const mm = gsap.matchMedia();
 
     mm.add("(min-width: 1024px)", () => {
+      // All three columns drift in the same (upward) direction. The
+      // doubled-list + modulo-wrap loop only has spare content BELOW the
+      // original list (the second copy), so translating up always has real
+      // content to reveal. A column set to translate down (positive y) has
+      // nothing above the list's start to reveal instead — it briefly shows
+      // empty space, which read as a gap opening up mid-column.
       const columns = [
         { ref: col1Ref, direction: -1 },
-        { ref: col2Ref, direction: 1 },
+        { ref: col2Ref, direction: -1 },
         { ref: col3Ref, direction: -1 },
       ];
 
@@ -212,8 +222,13 @@ export function PosterWall() {
 
   return (
     <div ref={wrapperRef} className="relative h-full overflow-hidden">
+      <div
+        aria-hidden
+        className="bg-marigold/10 pointer-events-none absolute top-1/2 left-1/2 -z-10 h-128 w-lg -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl"
+      />
       <div className="from-ink pointer-events-none absolute inset-x-0 top-0 z-20 h-[120px] bg-gradient-to-b to-transparent" />
       <div className="from-ink pointer-events-none absolute inset-x-0 bottom-0 z-20 h-[120px] bg-gradient-to-t to-transparent" />
+      <div className="from-ink pointer-events-none absolute inset-y-0 left-0 z-20 hidden w-32 bg-linear-to-r to-transparent lg:block lg:w-48" />
 
       <div className="hidden h-full grid-cols-3 gap-4 lg:grid">
         <DriftList

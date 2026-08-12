@@ -15,17 +15,15 @@ import { series, type Genre, type Series } from "@/content/series";
 import { site } from "@/content/site";
 import { cn } from "@/lib/utils";
 
-const GENRES = [
+// Derived from the actual data rather than hardcoded — series now carry
+// multiple genre tags, and a fixed list drifts out of sync with whatever
+// tags content actually uses.
+const GENRES: readonly ("All" | Genre)[] = [
   "All",
-  "Romance",
-  "Thriller",
-  "Family Drama",
-  "Revenge",
-  "Campus",
-  "Supernatural",
-] as const;
+  ...Array.from(new Set(series.flatMap((item) => item.genre))).sort(),
+];
 
-type GenreFilter = (typeof GENRES)[number];
+type GenreFilter = "All" | Genre;
 
 const CARD_SIZES =
   "(max-width: 768px) 45vw, (max-width: 1024px) 30vw, (max-width: 1440px) 22vw, 15vw";
@@ -99,7 +97,12 @@ export function OurContent() {
   const filtered =
     activeGenre === "All"
       ? series
-      : series.filter((item) => item.genre === (activeGenre as Genre));
+      : series.filter((item) =>
+          // Each series' `genre` literal tuple type differs per entry (from
+          // `as const`), so in the union of all of them `.includes`'s
+          // parameter narrows to `never` — widen back to `Genre[]` first.
+          (item.genre as readonly Genre[]).includes(activeGenre)
+        );
 
   const selected = series.find((item) => item.slug === selectedSlug) ?? null;
 
@@ -135,7 +138,7 @@ export function OurContent() {
           {filtered.length > 0 ? (
             <motion.div
               layout
-              className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 wide:grid-cols-6!"
+              className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4"
             >
               <AnimatePresence mode="popLayout">
                 {filtered.map((item) => (
@@ -195,7 +198,7 @@ export function OurContent() {
                       {selected.titleBn}
                     </p>
                     <div className="font-mono text-marigold text-body-sm flex items-center gap-3">
-                      <span>{selected.genre}</span>
+                      <span>{selected.genre.join(", ")}</span>
                       <span aria-hidden>·</span>
                       <span>{selected.episodes} episodes</span>
                     </div>

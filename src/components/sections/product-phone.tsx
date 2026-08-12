@@ -69,16 +69,30 @@ export function ProductPhone() {
     >
       <div
         ref={phoneRef}
-        className="border-plum bg-ink relative aspect-9/19.5 w-64 rounded-[44px] border-2 p-3 shadow-2xl sm:w-72"
+        className="border-plum bg-ink relative aspect-9/16 w-72 rounded-[48px] border-2 p-3 shadow-[0_50px_100px_-20px_rgba(240,162,2,0.2),0_20px_40px_-15px_rgba(0,0,0,0.5)] sm:w-80 lg:w-96"
         style={{ transformStyle: "preserve-3d" }}
       >
+        {/* Side buttons — decorative hardware detail on the frame edge. */}
+        <span
+          aria-hidden
+          className="bg-plum absolute top-24 -left-0.75 h-8 w-0.75 rounded-l-sm"
+        />
+        <span
+          aria-hidden
+          className="bg-plum absolute top-36 -left-0.75 h-12 w-0.75 rounded-l-sm"
+        />
+        <span
+          aria-hidden
+          className="bg-plum absolute top-28 -right-0.75 h-16 w-0.75 rounded-r-sm"
+        />
+
         <div className="bg-surface relative h-full w-full overflow-hidden rounded-4xl">
           {showStaticPoster ? (
             <Image
               src="/video/feed-poster.jpg"
               alt="Kahini Reels vertical feed"
               fill
-              sizes="(max-width: 640px) 256px, 288px"
+              sizes="(max-width: 640px) 288px, (max-width: 1024px) 320px, 384px"
               className="object-cover"
             />
           ) : (
@@ -100,7 +114,20 @@ export function ProductPhone() {
               <source src="/video/feed-loop.mp4" type="video/mp4" />
             </video>
           )}
+
+          {/* Glass sheen — a subtle diagonal highlight so the screen reads
+              as glossy hardware rather than a flat image. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 bg-linear-to-br from-white/10 via-transparent to-transparent"
+          />
         </div>
+
+        {/* Dynamic-island style notch. */}
+        <div
+          aria-hidden
+          className="bg-ink absolute top-6 left-1/2 h-6 w-24 -translate-x-1/2 rounded-full"
+        />
       </div>
     </div>
   );

@@ -28,6 +28,11 @@ type FormValues = {
   email: string;
   subject: ContactSubject | "";
   message: string;
+  // Honeypot — real visitors never see or fill this in (see the hidden
+  // field below). A non-empty value marks the submission as a bot and the
+  // API silently drops it. Not part of validation/errors, since a human
+  // is never expected to interact with it.
+  company: string;
 };
 
 const EMPTY_FORM: FormValues = {
@@ -35,9 +40,12 @@ const EMPTY_FORM: FormValues = {
   email: "",
   subject: "",
   message: "",
+  company: "",
 };
 
-type FieldName = keyof FormValues;
+// The honeypot field is deliberately excluded — it's never shown to real
+// users, so it has no validation state of its own.
+type FieldName = Exclude<keyof FormValues, "company">;
 
 function validateField(field: FieldName, values: FormValues): string | null {
   switch (field) {
@@ -50,7 +58,7 @@ function validateField(field: FieldName, values: FormValues): string | null {
         return "Enter an email address so we can reply.";
       return EMAIL_RE.test(values.email.trim())
         ? null
-        : "That email address doesn't look right — check for typos.";
+        : "That email address doesn't look right.";
     case "subject":
       return values.subject
         ? null
@@ -89,7 +97,7 @@ export function ContactForm() {
     }
   }, [pendingSubject, clearSubject]);
 
-  function handleChange(field: FieldName, value: string) {
+  function handleChange(field: keyof FormValues, value: string) {
     setValues((prev) => ({ ...prev, [field]: value }));
   }
 
@@ -140,6 +148,26 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
+      {/* Honeypot — invisible to real visitors (off-screen, unfocusable,
+          hidden from assistive tech), but present in the DOM so scripted
+          bots that blindly fill every field trip it. Any value here marks
+          the submission as spam server-side. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-[-9999px] h-0 w-0 overflow-hidden opacity-0"
+      >
+        <label htmlFor="contact-company">Company</label>
+        <input
+          id="contact-company"
+          name="company"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={values.company}
+          onChange={(event) => handleChange("company", event.target.value)}
+        />
+      </div>
+
       <div className="flex flex-col gap-2">
         <label htmlFor="contact-name" className="text-body-sm text-ivory/80">
           Name
