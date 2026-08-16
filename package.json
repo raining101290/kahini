@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "node scripts/postinstall-build.js"
+    "postinstall": "node \"$(dirname \"$npm_package_json\")/scripts/postinstall-build.js\""
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
