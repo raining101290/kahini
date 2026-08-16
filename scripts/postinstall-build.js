@@ -14,15 +14,14 @@ const { execSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
-// Don't trust process.cwd() — on this host, cPanel's "Run NPM Install" runs
-// lifecycle scripts with cwd set to the Node virtualenv folder rather than
-// the project directory (that's exactly what broke the initial version of
-// this script — see git history). `npm_package_json` is npm's own reliable
-// pointer to the package.json of the project actually being installed,
-// regardless of what the invoking shell's cwd is.
-const root = process.env.npm_package_json
-  ? path.dirname(process.env.npm_package_json)
-  : process.cwd();
+// Don't trust process.cwd() OR npm_package_json — on this host, cPanel's
+// "Run NPM Install" (CloudLinux's Node Selector) runs the install with both
+// pointed at the Node virtualenv folder, not the actual project directory
+// (apparently it copies just package.json in there to do the install). The
+// one thing we can trust is __dirname: wherever this file physically is on
+// disk, which is only ever reached at all via the absolute path hardcoded
+// in package.json's "postinstall" script for exactly this reason.
+const root = path.join(__dirname, "..");
 
 console.log(`[postinstall-build] CPANEL_BUILD=1 — running production build in ${root}...`);
 execSync("npx next build", { cwd: root, stdio: "inherit" });

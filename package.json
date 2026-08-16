@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "node \"$(dirname \"$npm_package_json\")/scripts/postinstall-build.js\""
+    "postinstall": "test -f /home/promarkb/kahinistudios.com/scripts/postinstall-build.js && node /home/promarkb/kahinistudios.com/scripts/postinstall-build.js || true"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
