@@ -51,6 +51,18 @@ tryRequire("lightningcss native (musl)", "lightningcss-linux-x64-musl");
 tryRequire("@tailwindcss/oxide native (glibc)", "@tailwindcss/oxide-linux-x64-gnu");
 tryRequire("@tailwindcss/oxide native (musl)", "@tailwindcss/oxide-linux-x64-musl");
 
+// sharp — Next's optional image-processing dependency, touched during
+// `next build` for local image imports. Separate WASM fallback package:
+// @img/sharp-wasm32.
+tryRequire("sharp native (glibc)", "@img/sharp-linux-x64");
+tryRequire("sharp native (musl)", "@img/sharp-linuxmusl-x64");
+
+// unrs-resolver — pulled in by eslint-import-resolver-typescript, which
+// runs during next build's lint step. Separate WASM fallback package:
+// @unrs/resolver-binding-wasm32-wasi.
+tryRequire("unrs-resolver native (glibc)", "@unrs/resolver-binding-linux-x64-gnu");
+tryRequire("unrs-resolver native (musl)", "@unrs/resolver-binding-linux-x64-musl");
+
 // If we get this far, try to directly provoke the same WASM path Next/
 // Tailwind fall back to, to see the raw underlying error in isolation.
 console.log("\n--- direct WebAssembly.instantiate sanity check ---");
