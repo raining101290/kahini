@@ -10,6 +10,9 @@
     "diagnose": "node scripts/diagnose-native.js",
     "postinstall": "test -f /home/promarkb/kahinistudios.com/scripts/postinstall-build.js && node /home/promarkb/kahinistudios.com/scripts/postinstall-build.js || true"
   },
+  "optionalDependencies": {
+    "lightningcss-linux-x64-gnu": "1.32.0"
+  },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
