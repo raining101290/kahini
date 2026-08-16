@@ -8,6 +8,18 @@ import nodemailer, { type Transporter } from "nodemailer";
 //   SMTP_FROM   (defaults to `"Kahini Studios" <SMTP_USER>`)
 //   CONTACT_TO_EMAIL (defaults to hello@kahinistudios.com)
 
+// True once real SMTP credentials are in place. Lets the API route tell
+// "not configured yet" (simulate — see route.ts) apart from "configured but
+// the send itself failed" (a real error worth surfacing as a 502).
+export function isEmailConfigured(): boolean {
+  return Boolean(
+    process.env.SMTP_HOST &&
+      process.env.SMTP_PORT &&
+      process.env.SMTP_USER &&
+      process.env.SMTP_PASS
+  );
+}
+
 let cachedTransporter: Transporter | null = null;
 
 function getTransporter(): Transporter {

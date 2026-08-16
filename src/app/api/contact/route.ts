@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { renderContactNotificationEmail } from "@/lib/email/contact-notification";
-import { sendMail } from "@/lib/email/mailer";
+import { isEmailConfigured, sendMail } from "@/lib/email/mailer";
 import { rateLimit } from "@/lib/rate-limit";
 
 // nodemailer needs Node APIs (net/tls) that aren't available on the Edge
@@ -108,15 +108,29 @@ export async function POST(request: Request) {
 
   const { name, email, subject, message } = result.data;
 
-  try {
-    const rendered = renderContactNotificationEmail({
-      name,
-      email,
-      subject,
-      message,
-      submittedAt: new Date(),
-    });
+  const rendered = renderContactNotificationEmail({
+    name,
+    email,
+    subject,
+    message,
+    submittedAt: new Date(),
+  });
 
+  // No SMTP credentials set yet (see .env.example) — simulate a successful
+  // send instead of erroring, so the form can be demoed end-to-end before
+  // real credentials exist. This isn't a manual toggle: the moment real
+  // SMTP_* env vars are set, isEmailConfigured() flips true and this branch
+  // stops running on its own — nothing to remember to turn back off.
+  if (!isEmailConfigured()) {
+    console.log(
+      "[contact] SMTP not configured — simulating a successful send. " +
+        "This submission was NOT actually emailed:",
+      { to: CONTACT_TO_EMAIL, replyTo: email, subject: rendered.subject, text: rendered.text }
+    );
+    return NextResponse.json({ ok: true });
+  }
+
+  try {
     await sendMail({
       to: CONTACT_TO_EMAIL,
       replyTo: email,
