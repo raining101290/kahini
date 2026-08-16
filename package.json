@@ -11,7 +11,8 @@
     "postinstall": "test -f /home/promarkb/kahinistudios.com/scripts/postinstall-build.js && node /home/promarkb/kahinistudios.com/scripts/postinstall-build.js || true"
   },
   "optionalDependencies": {
-    "lightningcss-linux-x64-gnu": "1.32.0"
+    "lightningcss-linux-x64-gnu": "1.32.0",
+    "@tailwindcss/oxide-linux-x64-gnu": "4.3.3"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

@@ -40,9 +40,16 @@ function tryRequire(label, id) {
 tryRequire("SWC native (glibc)", "@next/swc-linux-x64-gnu");
 tryRequire("SWC native (musl)", "@next/swc-linux-x64-musl");
 
-// Tailwind v4's CSS engine — same story.
+// Tailwind v4's CSS AST/minifier — same story.
 tryRequire("lightningcss native (glibc)", "lightningcss-linux-x64-gnu");
 tryRequire("lightningcss native (musl)", "lightningcss-linux-x64-musl");
+
+// Tailwind v4's core scanning/compilation engine — a SEPARATE native
+// binary from lightningcss, with its own explicit WASM fallback package
+// (@tailwindcss/oxide-wasm32-wasi). This was the one that turned out to
+// be missing after lightningcss was already fixed.
+tryRequire("@tailwindcss/oxide native (glibc)", "@tailwindcss/oxide-linux-x64-gnu");
+tryRequire("@tailwindcss/oxide native (musl)", "@tailwindcss/oxide-linux-x64-musl");
 
 // If we get this far, try to directly provoke the same WASM path Next/
 // Tailwind fall back to, to see the raw underlying error in isolation.
