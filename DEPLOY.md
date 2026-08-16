@@ -1,4 +1,4 @@
-# Deploying to cPanel (SSH access)
+# Deploying to cPanel (no terminal access)
 
 This site needs a real Node.js server, not static hosting — it has an API
 route (`/api/contact`, sends email via SMTP) and dynamic routes
@@ -7,112 +7,128 @@ have the **"Setup Node.js App"** tool (Application Manager, built on
 CloudLinux's Node.js Selector). If you don't see that in cPanel, your
 hosting plan doesn't support Node and this app can't run there as-is.
 
-Node version: pick the **newest available** in the Node.js Selector —
-Next.js 16 needs a recent Node 20.x/22.x LTS. `node -v` after activating
-the app's environment (step 2) to confirm.
-
 ## Your setup
 
-Hosting account: `promarkbd.com` (this is the cPanel account/primary
-domain — a separate, unrelated site, don't touch its `public_html`).
-`kahinistudios.com` is added as a parked/addon domain with its own
-document root already provisioned at:
+Hosting account: `promarkbd.com` (a separate, unrelated site — don't touch
+its `public_html`). `kahinistudios.com` has its own document root:
 
 ```
 /home/promarkb/kahinistudios.com
 ```
 
-(Confirm this in cPanel → **Domains** → the Document Root column for
-`kahinistudios.com`, before the first deploy — it should NOT point back
-into `public_html`. If it does, stop and park/addon it properly first, or
-the app would end up serving from the same folder as promarkbd.com's site.)
+That's where the app goes.
 
-That folder is what the steps below use as the app's home.
+## Why this guide doesn't use `git clone` / `npm run build` directly
 
-## One-time setup
+Normally you'd SSH in, `git clone`, then `npm install && npm run build`.
+Without a terminal, cPanel gives you exactly one build trigger: the **"Run
+NPM Install"** button on the Setup Node.js App screen. This project is set
+up so that button does the whole job — installing dependencies **and**
+building — via a `postinstall` script (`scripts/postinstall-build.js`) that
+only activates when you set `CPANEL_BUILD=1` as an environment variable (so
+it doesn't slow down or interfere with anyone's normal local development).
 
-1. **Get the code onto the server.** Over SSH:
-   ```bash
-   cd /home/promarkb/kahinistudios.com
-   git clone <your-repo-url> .
-   ```
-   (Or upload via SFTP/File Manager, minus `node_modules`, `.next`, `.git`.)
+## Step 1 — Get the source onto the server
 
-2. **Create the Node app in cPanel** (Setup Node.js App → Create Application):
-   - **Application root**: `kahinistudios.com` (i.e.
-     `/home/promarkb/kahinistudios.com`)
-   - **Application URL**: `kahinistudios.com` (pick it from the domain
-     dropdown — it's already registered to this account)
-   - **Application startup file**: `.next/standalone/server.js` (doesn't
-     exist yet — created by the build in step 4 below, but cPanel lets you
-     save this path now)
-   - **Node.js version**: the newest available
+You don't need `node_modules` or a `.next` folder — those get created by
+the "Run NPM Install" step. Just the source:
 
-   Saving this provisions a dedicated Node virtualenv and shows an "Enter
-   to the virtual environment" command — something like:
-   ```bash
-   source /home/promarkb/nodevenv/kahinistudios.com/20/bin/activate && cd /home/promarkb/kahinistudios.com
-   ```
-   (cPanel shows you the exact path/version — copy it from there, this is
-   just an example.) Run that over SSH before any `npm`/`node` command
-   below — it points `npm`/`node` at the version cPanel assigned this app,
-   not the system default.
+1. Download the project source as a zip (from wherever you're reading this
+   — ask whoever's helping you package it, or in GitHub: the repo page →
+   **Code → Download ZIP**).
+2. cPanel → **File Manager** → navigate into `kahinistudios.com`.
+3. **Upload** → select the zip → wait for it to finish.
+4. Right-click the uploaded zip → **Extract**. This unpacks the source
+   directly into `kahinistudios.com`.
+5. Delete the zip file afterward (housekeeping, not required).
 
-3. **Set environment variables** in the same cPanel screen (see
-   `.env.example` for the full list): `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`,
-   `SMTP_PASS`, `SMTP_SECURE`, `CONTACT_TO_EMAIL`. These reach the *running*
-   app.
+You should now see `src/`, `public/`, `package.json`, etc. directly inside
+`/home/promarkb/kahinistudios.com`.
 
-   `NEXT_PUBLIC_SITE_URL` is different — it's inlined into the client
-   bundle at **build time**, so cPanel's env var panel won't affect it.
-   Export it in your SSH session before building instead:
-   ```bash
-   export NEXT_PUBLIC_SITE_URL=https://kahinistudios.com
-   ```
+## Step 2 — Create the Node.js app
 
-## Every deploy (first time and updates)
+cPanel → **Setup Node.js App** → **Create Application**:
 
-```bash
-# 1. Activate this app's Node environment (exact command from cPanel's
-#    Setup Node.js App page for this app)
-source /home/promarkb/nodevenv/kahinistudios.com/20/bin/activate
-cd /home/promarkb/kahinistudios.com
+- **Node.js version**: the newest available (Next.js 16 needs a recent
+  Node 20.x/22.x LTS)
+- **Application mode**: Production
+- **Application root**: `kahinistudios.com`
+- **Application URL**: `kahinistudios.com` (pick it from the domain
+  dropdown)
+- **Application startup file**: `.next/standalone/server.js`
+  (doesn't exist yet — created by Step 3 — but cPanel lets you type this
+  path in now and save)
 
-# 2. Pull the latest code
-git pull
+Click **Create**.
 
-# 3. Install ALL dependencies (build needs devDependencies like typescript;
-#    they aren't shipped in the final output, just needed to produce it)
-npm install
+## Step 3 — Set environment variables, then build
 
-# 4. Build + assemble the standalone deploy folder (public/, .next/static)
-export NEXT_PUBLIC_SITE_URL=https://kahinistudios.com
-./scripts/build-for-cpanel.sh
+Still on this app's page, scroll to **Environment Variables** and add:
+
+```
+CPANEL_BUILD=1
+NEXT_PUBLIC_SITE_URL=https://kahinistudios.com
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=hello@kahinistudios.com
+SMTP_PASS=<your Google Workspace App Password>
 ```
 
-Then in cPanel's Setup Node.js App screen, click **Restart**. Passenger
-picks up the new `.next/standalone/server.js`.
+(Leave `SMTP_PASS` blank / skip the SMTP vars entirely for now if you just
+want the simulated-send demo behavior a bit longer — see the note on
+simulation mode below.)
 
-## What "standalone" output means here
+**Save.** Then scroll up and click **Run NPM Install**.
 
-`next.config.ts` sets `output: "standalone"`. A normal `next build` +
-`next start` needs the full `node_modules` present on the server forever —
-often too much for shared hosting, and risks lockfile/version drift on
-every deploy. Standalone mode traces only what's actually needed at
-runtime into `.next/standalone`, including a self-contained `server.js`
-that listens on `process.env.PORT` (which is exactly what Passenger expects
-from a Node app). `scripts/build-for-cpanel.sh` runs the build and copies
-the two things standalone mode deliberately leaves out — `public/` and
-`.next/static` — verified locally end-to-end (booted the standalone
-server, hit `/`, a poster image, `/api/contact`, and `/sitemap.xml`, all
-200 as expected).
+This installs dependencies, then automatically runs the production build
+and assembles everything the server needs (this takes a minute or two —
+Next.js builds are not instant). Watch the output cPanel shows; it should
+end with something like:
 
-## Verifying after deploy
+```
+[postinstall-build] done — startup file is .next/standalone/server.js
+```
+
+If it stops with an error instead, see **Troubleshooting** below before
+continuing.
+
+## Step 4 — Restart
+
+Back on the Setup Node.js App screen for this app, click **Restart**.
+
+## Step 5 — Verify
 
 - Visit `kahinistudios.com` — homepage should load with posters, and
   `promarkbd.com` should be completely unaffected.
 - `/sitemap.xml` and `/robots.txt` should return real content, not 404.
-- Submit the contact form once for real. If SMTP env vars are missing or
-  wrong, the form shows a graceful "something went wrong" toast rather than
-  crashing — check the app's error log in cPanel (Setup Node.js App →
-  your app → shows a log path) for the specific SMTP error if that happens.
+- Submit the contact form. If you left SMTP unset, you'll see the same
+  success message a real send would show, but nothing is actually
+  emailed — check the app's error log (this same cPanel screen shows a log
+  file path) for a line starting `[contact] SMTP not configured —
+  simulating a successful send`, which confirms the form itself is working
+  correctly end-to-end. Once you add real `SMTP_*` values and re-run **Run
+  NPM Install** + **Restart**, submissions start actually sending.
+
+## Every future update
+
+Repeat Steps 1 and 3's "Run NPM Install" — re-upload the changed source
+(replacing the old files) and click **Run NPM Install** again, then
+**Restart**. There's no way to `git pull` without a terminal, so re-zipping
+and re-uploading is the update mechanism here.
+
+## Troubleshooting
+
+- **"Run NPM Install" fails or times out**: shared hosting sometimes limits
+  memory available to build processes, and a Next.js production build can
+  need more than a very small plan allows. If it fails consistently, that's
+  the most likely cause — worth asking your hosting provider what memory
+  limit applies to Node apps on this account.
+- **It seems to skip the build (no `[postinstall-build]` lines in the
+  output)**: some hosts run npm install with script execution disabled for
+  security. If so, this specific approach can't work without a terminal —
+  worth asking your hosting provider to either enable shell/SSH access for
+  this account, or run one `npm run build` for you as a one-time favor.
+- **Site loads but images look broken / contact form 500s**: almost always
+  a leftover env var typo, or the build partially failed. Re-check Step 3's
+  values, re-run **Run NPM Install**, and check the error log.

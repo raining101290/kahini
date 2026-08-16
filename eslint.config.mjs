@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Standalone Node/shell tooling for deployment, not app source — runs
+    // via plain `node`/`bash` outside the app's module system, so it
+    // intentionally uses CommonJS `require` rather than the app's ESM style.
+    "scripts/**",
   ]),
 ]);
 
