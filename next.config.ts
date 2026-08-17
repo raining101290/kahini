@@ -4,14 +4,17 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
-  // `next build` runs ESLint by default, which on this host pulls in
-  // eslint-import-resolver-typescript -> unrs-resolver, whose native
-  // binary fails to load under cPanel's LVE/CageFS restrictions (falls
-  // back to a WASM build that then OOMs under the 4GB memory cap — see
-  // DEPLOY.md). Linting still runs fine locally/in your editor; it just
-  // shouldn't gate the production build on this host.
-  eslint: {
-    ignoreDuringBuilds: true,
+  // cPanel's LVE memory cap (4GB) is enforced per-account, aggregated
+  // across ALL of that account's processes at once — not per individual
+  // process. next build normally spawns several parallel worker
+  // processes for compilation; even though each native binary loads
+  // fine in isolation (see scripts/diagnose-native.js), their combined
+  // memory footprint under one shared ceiling can still trip a
+  // WebAssembly OOM in whichever worker happens to touch it. Force
+  // single-worker (sequential) compilation to keep peak memory well
+  // under the cap, at the cost of a slower build.
+  experimental: {
+    cpus: 1,
   },
   // cPanel's "Setup Node.js App" (Passenger) runs a plain Node entry file
   // rather than `next start` directly, and shared hosting often can't
