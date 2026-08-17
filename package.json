@@ -10,6 +10,7 @@
     "diagnose": "node scripts/diagnose-native.js",
     "cpanel-build": "CPANEL_BUILD=1 node scripts/postinstall-build.js",
     "cpanel-next-version": "npx next --version",
+    "cpanel-test-swc": "node scripts/test-swc-bindings.js",
     "postinstall": "test -f /home/promarkb/public_html/app/scripts/postinstall-build.js && node /home/promarkb/public_html/app/scripts/postinstall-build.js || true"
   },
   "optionalDependencies": {
