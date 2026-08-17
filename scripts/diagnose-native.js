@@ -52,10 +52,12 @@ tryRequire("@tailwindcss/oxide native (glibc)", "@tailwindcss/oxide-linux-x64-gn
 tryRequire("@tailwindcss/oxide native (musl)", "@tailwindcss/oxide-linux-x64-musl");
 
 // sharp — Next's optional image-processing dependency, touched during
-// `next build` for local image imports. Separate WASM fallback package:
-// @img/sharp-wasm32.
-tryRequire("sharp native (glibc)", "@img/sharp-linux-x64");
-tryRequire("sharp native (musl)", "@img/sharp-linuxmusl-x64");
+// `next build` for local image imports. Test via the `sharp` package
+// itself (not the platform sub-package directly — sharp resolves its
+// binary internally in a way `require("@img/sharp-linux-x64")` doesn't
+// replicate, so requiring the sub-package directly reports a false
+// failure). Separate WASM fallback package: @img/sharp-wasm32.
+tryRequire("sharp (loads its own native binary internally)", "sharp");
 
 // unrs-resolver — pulled in by eslint-import-resolver-typescript, which
 // runs during next build's lint step. Separate WASM fallback package:
